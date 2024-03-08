@@ -1,0 +1,84 @@
+{
+    "activity-data": [
+        {
+            "id": 1,
+            "title": "Jan 9, 2014. 14: 29: 47",
+            "subtitle": "Prijava na sistem",
+            "user": "Test User 1"
+        },
+        {
+            "id": 2,
+            "title": "Jan 5, 2014. 14: 28: 47",
+            "subtitle": "Prijava na sistem",
+            "user": "Test User 2"
+        },
+        {
+            "id": 3,
+            "title": "Jan 3, 2014. 14: 27: 47",
+            "subtitle": "Prijava na sistem",
+            "user": "Test User 3"
+        }
+    ],
+    "action-data": [
+        {
+            "id": 1,
+            "title": "Novi zahtev",
+            "icon": "mdi-account-circle",
+            "baseColor": "info"
+        },
+        {
+            "id": 2,
+            "title": "Novi zahtev",
+            "icon": "mdi-alert-circle",
+            "baseColor": "danger"
+        },
+        {
+            "id": 3,
+            "title": "Novi zahtev",
+            "icon": "mdi-account",
+            "baseColor": "secondary"
+        }
+    ],
+    "card-data": [
+        {
+            "id": 1,
+            "title": "Novi zahtev",
+            "icon": "mdi-account-circle",
+            "baseColor": "red",
+            "topNumber": "23455",
+            "goTo": "{ name: 'dashboard'}"
+        },
+        {
+            "id": 2,
+            "title": "Novi zahtev",
+            "icon": "mdi-alert-circle",
+            "baseColor": "green",
+            "topNumber": "3",
+            "goTo": "{ name: 'dashboard'}"
+        },
+        {
+            "id": 3,
+            "title": "Novi zahtev",
+            "icon": "mdi-account",
+            "baseColor": "blue",
+            "topNumber": "356",
+            "goTo": "{ name: 'dashboard'}"
+        },
+        {
+            "id": 4,
+            "title": "Novi zahtev",
+            "icon": "mdi-account-circle",
+            "baseColor": "red",
+            "topNumber": "23455",
+            "goTo": "{ name: 'dashboard'}"
+        },
+        {
+            "id": 5,
+            "title": "Novi zahtev",
+            "icon": "mdi-alert-circle",
+            "baseColor": "green",
+            "topNumber": "3",
+            "goTo": "{ name: 'dashboard'}"
+        }
+    ]
+}
