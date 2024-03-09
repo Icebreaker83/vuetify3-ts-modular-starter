@@ -42,8 +42,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const appTitle = t('appTitleShort');
-
-  document.title = to.meta.title ? `${to.meta.title} | ${appTitle}` : appTitle;
+  const title = typeof to.meta.title === 'string' && to.meta.title ? `${to.meta.title} | ${appTitle}` : appTitle;
+  document.title = title;
 
   const { authState, logout } = useAuthorizationService();
   const { cookies } = useCookies();
@@ -57,7 +57,7 @@ router.beforeEach((to, from, next) => {
   // if route requires auth and user not logged
   if (to.matched.some(record => record.meta.requiresAuth) && !authState.value.isAuth) {
     // add redirect to url query and go to login page
-    next({ name: 'login', query: { redirect: to.fullPath } });
+    next({ name: 'home', query: { redirect: to.fullPath } });
     return;
   }
   // if logged in and navigating to home redirect to dashboard

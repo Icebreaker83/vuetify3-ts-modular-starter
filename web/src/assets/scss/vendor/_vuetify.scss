@@ -1,0 +1,14 @@
+.v-select.readonly {
+  i {
+    display: none;
+  }
+}
+
+.v-autocomplete.v-input--readonly {
+  i.v-autocomplete__menu-icon {
+    display: none;
+  }
+}
+.v-field.v-field--disabled {
+  opacity: 0.7;
+}

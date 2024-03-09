@@ -1,24 +1,20 @@
 export default {
-  appTitleShort: 'БПС',
-  appTitleFull: 'Сервис буџетског планирања',
+  appTitleShort: 'Апп',
+  appTitleFull: 'Апп пун назив',
   environments: {
-    ptest: 'Test environment',
-    development: 'Development environment',
-    staging: 'Staging environment',
-    atest: 'ATest environment',
-    production: 'Production environment',
-    local: 'Local environment',
+    test: 'Тестно окружење',
+    development: 'Развојно окружење',
+    staging: 'Стејџинг окружење',
+    production: 'Продукционо окружење',
   },
   user: {
     login: 'Корисничко име',
     password: 'Лозинка',
   },
   home: {
-    login: 'Пријава',
     register: 'Региструјте се',
     notRegistered: 'Немате налог?',
-    subheading:
-      'Информациони систем за припрему, извршење, буџетско рачуноводство и извештавање буџета Републике Србије',
+    subheading: 'Овде иде кратки опис апликације',
   },
   dashboard: {
     self: 'Почетна',

@@ -3,9 +3,17 @@ import type { RouteDefinition } from './types';
 
 export const publicRoutes: RouteDefinition[] = [
   {
-    name: 'login',
+    name: 'home',
     path: '/',
-    component: () => import('@/views/Home.vue'),
+    component: () => import('@/views/public/Home.vue'),
     meta: { title: t('home.login') },
+  },
+  {
+    name: 'registration',
+    path: 'registration',
+    component: () => import('@/views/public/Registration.vue'),
+    meta: {
+      title: t('registration.self'),
+    },
   },
 ];

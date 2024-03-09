@@ -13,3 +13,8 @@ export interface AuthorizationState {
 export interface AccessToken extends JwtPayload {
   user_name: string;
 }
+
+export interface LoginPayload {
+  login: string;
+  password: string;
+}

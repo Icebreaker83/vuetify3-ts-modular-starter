@@ -1,12 +1,14 @@
 import { nextTick } from 'vue';
 import { useAuthStore, clearState } from './store';
 import { endpoints } from './api';
-import type { AccessToken } from './types';
+import type { AccessToken, LoginPayload } from './types';
 import { useCookies } from 'vue3-cookies';
 import { jwtDecode } from 'jwt-decode';
 import { useApis, type ApiResponse } from '../api';
 import type { Router } from 'vue-router';
 import { storeToRefs } from 'pinia';
+
+export type { LoginPayload };
 
 export const useAuthorizationService = () => {
   const { cookies } = useCookies();
@@ -66,7 +68,7 @@ export const useAuthorizationService = () => {
     cookies.remove('_accessToken');
     cookies.remove('_refreshToken');
     const route = {
-      name: 'login',
+      name: 'home',
       ...(redirect ? { query: { redirect: router.currentRoute.value.fullPath } } : {}),
     };
     router.push(route);
@@ -75,6 +77,7 @@ export const useAuthorizationService = () => {
   const getAuthorizationHeader = () => {
     return { Authorization: `Bearer ${cookies.get('_accessToken')}` };
   };
+
   return {
     authState,
     login,

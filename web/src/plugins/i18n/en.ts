@@ -1,24 +1,21 @@
 export default {
-  appTitleShort: 'BPS',
-  appTitleFull: 'Budget planing service',
+  appTitleShort: 'App',
+  appTitleFull: 'App title',
   environments: {
-    ptest: 'Тестно окружење',
-    development: 'Развојно окружење',
-    staging: 'Стејџинг окружење',
-    atest: 'АТест окружење',
-    production: 'Продукционо окружење',
-    local: 'Локално окружење',
+    test: 'Test environment',
+    development: 'Development environment',
+    staging: 'Staging environment',
+    production: 'Production environment',
   },
   user: {
     login: 'Username',
     password: 'Password',
   },
   home: {
-    login: 'Login',
+    heading: 'App title',
     register: 'Register',
-    notRegistered: 'You don\'t have account?',
-    subheading:
-      'Information system for the preparation, execution, budget accounting and reporting of the budget of the Republic of Serbia',
+    notRegistered: "You don't have account?",
+    subheading: 'Short description of the application and what its used for',
   },
   dashboard: {
     self: 'Dashboard',

@@ -2,15 +2,16 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useVuelidate, type ErrorObject } from '@vuelidate/core';
 import type { ValidationErrorMessages } from './types';
+import validators from './validators';
 
-
+export { validators };
 /**
  * Provides validation functionalities based on the provided rules and state.
  * @param {object} rules - The validation rules.
  * @param {object} state - The current state of the object being validated.
  * @returns {object} - An object containing various validation functions and properties.
  */
-export default (rules: object, state: object) => {
+export const useValidation = (rules: object, state: object) => {
   const v$ = useVuelidate(rules, state);
   const { t, te } = useI18n();
 
@@ -26,7 +27,7 @@ export default (rules: object, state: object) => {
       return;
     }
     v$.value[fieldName].$touch();
-    if (!v$ || !v$.value[fieldName].$error) {
+    if (!v$?.value[fieldName]?.$error) {
       errorMessages.value[fieldName] = '';
       return;
     }

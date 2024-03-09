@@ -14,7 +14,7 @@ type MessageSchema = typeof sr;
 const isProd = import.meta.env.PROD;
 
 const options = {
-  locale: 'sr', // set locale
+  locale: 'en', // set locale
   legacy: false,
   missingWarn: !isProd,
   fallbackWarn: !isProd,
@@ -22,7 +22,7 @@ const options = {
   messages, // set locale messages
 };
 
-const i18n = createI18n<[MessageSchema], 'sr' | 'en'>(options);
+const i18n = createI18n<[MessageSchema], 'en' | 'sr'>(options);
 
 export default i18n;
 

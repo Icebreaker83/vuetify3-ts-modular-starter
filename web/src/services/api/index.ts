@@ -26,21 +26,23 @@ export const useApis = () => {
       .then((response: ApiResponse) => {
         const onSuccess = request?.onSuccess?.callback;
         onSuccess && onSuccess(response);
-        if (!request?.onSuccess?.message) return response;
-        showAlert({
-          type: 'success',
-          message: request?.onSuccess?.message,
-        });
+
+        request?.onSuccess?.message &&
+          showAlert({
+            type: 'success',
+            message: request.onSuccess.message,
+          });
+
         return response;
       })
       .catch((error: any) => {
         if (apiClient.isCancel(error)) return;
         console.error(error);
         const onError = request?.onError;
-        const errorMessage = error?.response?.data?.message;
+        const errorMessage = error?.response?.data?.message ?? t('messages.error.default');
         showAlert({
           type: 'error',
-          message: onError?.message || errorMessage || t('messages.error.default'),
+          message: onError?.message ?? errorMessage,
         });
         onError?.callback && onError?.callback(error);
       })

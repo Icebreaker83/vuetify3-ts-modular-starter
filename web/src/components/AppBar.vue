@@ -7,6 +7,7 @@ import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
 import { useRoute, useRouter, RouteRecordName } from 'vue-router';
 import { publicRoutes } from '../router/public-routes';
+import { ENVIRONMENTS } from '@/constants';
 
 const { authState, logout } = useAuthorizationService();
 const { xs } = useDisplay();
@@ -17,16 +18,15 @@ const router = useRouter();
 
 const backgroundColor = import.meta.env.VITE_ENV_COLOR || 'primary';
 const environment = import.meta.env.MODE;
-const displayEnvironmentChip = ['ptest', 'development', 'staging', 'atest', 'local'].includes(environment);
+const displayEnvironmentChip = ENVIRONMENTS.includes(environment);
 
 const isPublicRoute = computed(() => publicRoutes.map(item => item.name).includes(route.name as RouteRecordName));
 </script>
 <template>
   <v-app-bar :elevation="2" :color="backgroundColor">
-    <!-- <v-app-bar-nav-icon /> -->
     <template #title>
       <v-icon v-if="xs && !isPublicRoute" icon="mdi-menu" class="mr-3" @click="toggleSidebar"></v-icon>
-      <img class="logo" src="../assets/logo.svg" />
+      <img class="logo" src="@/assets/logo.svg" height="50" alt="Logo" />
       <v-chip v-if="!xs && displayEnvironmentChip" variant="elevated" color="primary" class="mx-2">
         {{ $t(`environments.${environment}`) }}
       </v-chip>
@@ -37,15 +37,12 @@ const isPublicRoute = computed(() => publicRoutes.map(item => item.name).include
       <v-menu>
         <template #activator="{ props }">
           <v-btn v-bind="props" class="text-none px-2">
-            <span data-cy="logged-in-user">{{ authState.user.login }}</span>
-            <v-icon icon="mdi-menu-down" />
+            <v-avatar color="info">
+              <v-icon icon="mdi-account-circle" />
+            </v-avatar>
           </v-btn>
         </template>
         <v-list>
-          <!-- <v-list-item :to="{ name: 'userProfile' }" nav data-cy="administration.profile">
-            <v-icon icon="mdi-account-circle" />
-            {{ $t('administration.profile') }}
-          </v-list-item> -->
           <v-list-item nav data-cy="logout" @click="logout(false, router)">
             <v-icon icon="mdi-logout" />
             {{ $t('misc.logout') }}
@@ -54,8 +51,6 @@ const isPublicRoute = computed(() => publicRoutes.map(item => item.name).include
         </v-list>
       </v-menu>
     </template>
-
-    <!-- <TheCrest v-if="!xs && !authState.isAuth" class="me-2" /> -->
   </v-app-bar>
 </template>
 <style lang="scss" scoped>

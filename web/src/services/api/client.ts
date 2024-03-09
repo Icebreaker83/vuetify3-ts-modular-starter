@@ -10,12 +10,12 @@ axios.interceptors.request.use(
     // if public request, skip
     if (!config.headers.Authorization) return config;
     const { authState, endpoints, refreshAccessToken } = useAuthorizationService();
-    const refreshRegex = new RegExp(`${endpoints.refresh.url}`)
+    const refreshRegex = new RegExp(`${endpoints.refresh.url}`);
     // if refresh token endpoint, skip
-    if(config.url && refreshRegex.test(config.url)) return config
+    if (config.url && refreshRegex.test(config.url)) return config;
     const { cookies } = useCookies();
     const now = Date.now();
-    
+
     const refreshToken = cookies.get('_refreshToken');
 
     // if no refreshToken in cookies cancel request
@@ -26,7 +26,7 @@ axios.interceptors.request.use(
         signal: AbortSignal.abort(),
       };
     }
-    const expirationDate = authState.value.expirationDate || 0;
+    const expirationDate = authState.value?.expirationDate ?? 0;
     // // if token expired refresh it
     if (now >= expirationDate) {
       await axios({

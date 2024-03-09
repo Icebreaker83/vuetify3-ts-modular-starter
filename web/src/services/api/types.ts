@@ -1,8 +1,6 @@
 import type { AxiosResponse as ApiResponse, AxiosError } from 'axios';
 
-export interface HttpFinally {
-  (): void;
-}
+export type HttpFinally = () => void;
 
 export interface HttpResponse {
   callback?(response: ApiResponse): void;

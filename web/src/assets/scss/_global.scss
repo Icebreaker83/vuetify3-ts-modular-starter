@@ -1,0 +1,9 @@
+@import 'vuetify/lib/styles/settings/_colors.scss';
+
+html {
+  overflow-y: auto !important;
+}
+
+.heading-section {
+  border-bottom: 15px solid map-get($blue, accent-1);
+}

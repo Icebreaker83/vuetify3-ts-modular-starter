@@ -5,7 +5,7 @@ export const privateRoutes: RouteDefinition[] = [
   {
     name: 'dashboard',
     path: '/dashboard',
-    component: () => import('@/views/dashboard/TheDashboard.vue'),
+    component: () => import('@/views/private/dashboard/TheDashboard.vue'),
     meta: {
       title: t('dashboard.self'),
       hideActions: true,
