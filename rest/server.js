@@ -1,4 +1,3 @@
-const fs = require('fs');
 const jsonServer = require('json-server');
 const jwt = require('jsonwebtoken');
 
@@ -9,8 +8,6 @@ const middlewares = jsonServer.defaults();
 // // Apply rewriter middleware
 server.use(middlewares);
 server.use(jsonServer.bodyParser);
-
-const userdb = JSON.parse(fs.readFileSync('./users.json', 'UTF-8'));
 
 const SECRET_KEY = '123456789';
 const expiresIn = '2m';
@@ -25,13 +22,6 @@ const createToken = (payload, expiresIn) => {
 const verifyToken = (token) => {
   return jwt.verify(token, SECRET_KEY, (err, decode) =>
     decode !== undefined ? decode : err
-  );
-};
-
-// Check if the user exists in database
-const getUser = ({ login, password }) => {
-  return userdb.users.find(
-    (user) => user.username === login && user.password === password
   );
 };
 
@@ -78,7 +68,10 @@ const getPaginatedData = (data, _page, _limit) => {
 
 server.post('/login', (req, res) => {
   const { login, password } = req.body;
-  const user = getUser({ login, password });
+  const user = router.db
+    .get('users')
+    .value()
+    .find((user) => user.username === login && user.password === password);
   if (!user) {
     const status = 401;
     const message = 'Incorrect username or password';
@@ -110,6 +103,10 @@ server.get('/login/refresh', (req, res) => {
 });
 
 server.use(/^(?!\/login).*$/, (req, res, next) => {
+  if (req.originalUrl === '/users' && req.method === 'POST') {
+    next();
+    return;
+  }
   if (
     req.headers.authorization === undefined ||
     req.headers.authorization.split(' ')[0] !== 'Bearer'
@@ -137,6 +134,7 @@ server.use(/^(?!\/login).*$/, (req, res, next) => {
       res.status(200).json({ totalRows, rows });
       return;
     }
+    next();
   } catch (error) {
     const status = 401;
     const message = 'Error: access_token is not valid';
@@ -144,7 +142,7 @@ server.use(/^(?!\/login).*$/, (req, res, next) => {
   }
 });
 
-server.use('/api', router);
+server.use(router);
 
 server.listen(3000, () => {
   console.log('Run Auth API Server on localhost:3000');

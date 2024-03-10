@@ -1,4 +1,5 @@
 import type { RouteRecordRaw, RouteLocationRaw } from 'vue-router';
+import { DisplayBreakpoint } from 'vuetify';
 
 export interface BreadcrumbItem {
   title: string;
@@ -15,6 +16,7 @@ export type RouteMeta = {
   isNavigation?: boolean;
   isRoot?: boolean;
   breadcrumbs?: BreadcrumbItem[];
+  size?: DisplayBreakpoint;
 } & Record<string | number | symbol, unknown>;
 
 export interface RouteDefinition extends Omit<RouteRecordRaw, 'meta' | 'children'> {

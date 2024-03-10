@@ -12,6 +12,7 @@ export default {
     password: 'Password',
   },
   home: {
+    login: 'Login',
     heading: 'App title',
     register: 'Register',
     notRegistered: "You don't have account?",
@@ -21,11 +22,25 @@ export default {
     self: 'Dashboard',
     title: 'Welcome',
   },
+  users: {
+    registration: {
+      self: 'Register account',
+      fields: {
+        username: 'Username',
+        name: 'Name and Surname',
+        email: 'E-mail',
+        password: 'Password',
+      },
+      success: 'Account registered',
+    },
+  },
   form: {
     submit: 'Submit',
+    cancel: 'Cancel',
   },
   validators: {
     required: 'Required',
+    email: 'Invalid email',
   },
   404: '404 - Page not found',
   403: 'You are not authorized to view this page',

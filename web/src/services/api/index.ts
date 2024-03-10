@@ -69,4 +69,4 @@ export const useApis = () => {
   };
 };
 
-export { ApiResponse };
+export { ApiResponse, HttpRequest };

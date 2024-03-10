@@ -13,7 +13,8 @@ export const publicRoutes: RouteDefinition[] = [
     path: 'registration',
     component: () => import('@/views/public/Registration.vue'),
     meta: {
-      title: t('registration.self'),
+      title: t('users.registration.self'),
+      size: 'sm',
     },
   },
 ];

@@ -12,6 +12,7 @@ export default {
     password: 'Лозинка',
   },
   home: {
+    login: 'Пријава',
     register: 'Региструјте се',
     notRegistered: 'Немате налог?',
     subheading: 'Овде иде кратки опис апликације',
@@ -20,11 +21,25 @@ export default {
     self: 'Почетна',
     title: 'Добродошли',
   },
+  users: {
+    registration: {
+      self: 'Регистрација налога',
+      fields: {
+        username: 'Кориснички налог',
+        name: 'Име и Презиме',
+        email: 'Е-пошта',
+        password: 'Лозинка',
+      },
+      success: 'Налог регистрован',
+    },
+  },
   form: {
     submit: 'Потврди',
+    cancel: 'Откажи',
   },
   validators: {
     required: 'Неопходно',
+    email: 'Неисправна адреса е-поште',
   },
   404: 'Страница није пронађена',
   403: 'Страница није пронађена или немате право приступа',
