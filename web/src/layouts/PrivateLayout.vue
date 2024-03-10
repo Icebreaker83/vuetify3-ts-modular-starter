@@ -5,9 +5,12 @@ import type { SidebarItem } from 'vue-sidebar-menu';
 import { useRouter, type RouteRecordNormalized, RouteRecordRaw } from 'vue-router';
 import { useAuthorizationService } from '@/services/authorization';
 import type { BreadcrumbItem } from '@/types';
+import { useAutoLogout } from '@/composables/auto-logout';
 
-const router = useRouter();
 const { authState } = useAuthorizationService();
+const router = useRouter();
+const sessionDuration = import.meta.env.VITE_SESSION_DURATION_MINS;
+useAutoLogout(sessionDuration, router);
 
 type CombinedRoute = RouteRecordRaw | RouteRecordNormalized;
 
@@ -18,12 +21,10 @@ const parseRoutes = (routes: CombinedRoute[], depth = 0): SidebarItem[] => {
       if (!route.meta?.isNavigation) return acc;
       if (!depth && !route.meta?.isRoot) return acc;
       acc.push({
-        title: (route.meta?.title || route.name || route.path) as string,
+        title: (route.meta?.title ?? route.name ?? route.path) as string,
         ...(route.name ? { href: { name: route.name } } : {}),
         icon: route.meta?.icon || '',
-        ...(route.children && route.children.length
-          ? { child: parseRoutes(route.children as CombinedRoute[], ++depth) }
-          : {}),
+        ...(route.children?.length ? { child: parseRoutes(route.children as CombinedRoute[], ++depth) } : {}),
       });
       return acc;
     },
@@ -34,10 +35,6 @@ const parseRoutes = (routes: CombinedRoute[], depth = 0): SidebarItem[] => {
 
 const menu = parseRoutes(allRoutes);
 
-// const showActions = computed(() => {
-//   return !router.currentRoute.value.meta.hideActions;
-// });
-
 // "to" prop of v-breadcrumbs-item is not working as expected
 // thats why we use href prop in meta.breadcrumbs
 const breadcrumbs = computed(() => {
@@ -46,7 +43,7 @@ const breadcrumbs = computed(() => {
     return currentRoute.matched.reduce(
       (acc, item, index) => {
         if (!index) return acc;
-        acc.push({ title: item.meta.title as string, ...(!!item.components ? { href: item.path } : {}) });
+        acc.push({ title: item.meta.title as string, ...(item.components ? { href: item.path } : {}) });
         return acc;
       },
       <BreadcrumbItem[]>[],
@@ -62,17 +59,14 @@ const breadcrumbs = computed(() => {
   <div class="d-flex fill-height">
     <TheSidebar :menu="menu" />
     <div class="d-flex flex-column flex-grow-1 overflow-auto">
-      <!-- use this for breadcrumb wrapper for now -->
-      <div v-if="authState.isAuth" class="d-flex bg-primary px-4 py-2 actions-bar">
-        <portal-target name="actions">
-          <v-breadcrumbs :items="breadcrumbs" class="pa-0">
-            <template #prepend>
-              <router-link to="/">
-                <v-icon icon="mdi-home" color="white" />
-              </router-link>
-            </template>
-          </v-breadcrumbs>
-        </portal-target>
+      <div class="d-flex bg-primary px-4 py-2 actions-bar">
+        <v-breadcrumbs :items="breadcrumbs" class="pa-0">
+          <template #prepend>
+            <router-link to="/">
+              <v-icon icon="mdi-home" color="white" />
+            </router-link>
+          </template>
+        </v-breadcrumbs>
       </div>
       <v-container fluid class="view-content">
         <router-view />

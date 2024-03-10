@@ -12,7 +12,7 @@ export type { LoginPayload };
 
 export const useAuthorizationService = () => {
   const { cookies } = useCookies();
-  const { setAuthState } = useAuthStore();
+  const { setAuthState, refreshActivity } = useAuthStore();
   const { authState } = storeToRefs(useAuthStore());
 
   const setCredentials = (user: string, accessToken: string, refreshToken: string) => {
@@ -44,7 +44,8 @@ export const useAuthorizationService = () => {
           const data = response.data;
           setCredentials(username, data.payload.accessToken, data.payload.refreshToken);
           nextTick(() => {
-            router.push({ name: 'dashboard' });
+            const redirectRoute = router.currentRoute.value?.query?.redirect as string;
+            router.push(redirectRoute ? { path: redirectRoute } : { name: 'dashboard' });
           });
         },
       },
@@ -62,7 +63,6 @@ export const useAuthorizationService = () => {
   };
 
   const logout = (redirect: boolean, router: Router) => {
-    // redirect && setAutoLogout(redirect);
     setAuthState(JSON.parse(JSON.stringify(clearState)));
     // remove cookies and other relevant items from localStorage
     cookies.remove('_accessToken');
@@ -85,6 +85,7 @@ export const useAuthorizationService = () => {
       refresh,
     },
     refreshAccessToken,
+    refreshActivity,
     logout,
     getAuthorizationHeader,
   };
