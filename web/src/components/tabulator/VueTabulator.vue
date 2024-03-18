@@ -7,14 +7,13 @@ import { useRowActions } from './row-actions';
 import useTabulatorMobile from './mobile';
 import { useRoute } from 'vue-router';
 import { useDisplay } from 'vuetify';
-// import FilterMenu from './mobile/filters/FilterMenu.vue';
-// import AppliedFilters from './AppliedFilters.vue';
 import getFilters from './filters';
 import getFormatters from './formatters';
 import type { MobileOptions, RowActions } from './types';
 
 const props = withDefaults(
   defineProps<{
+    persistenceId: string;
     options: Options;
     mobileOptions?: MobileOptions;
     rowActions?: RowActions;
@@ -26,6 +25,7 @@ const props = withDefaults(
     formatUrl?: boolean;
   }>(),
   {
+    persistenceId: 'tabulator-table',
     options: () => ({}),
     rowActions: () => ({}),
     idField: 'id',
@@ -49,14 +49,6 @@ const { tabulatorOptions, appliedFilters, selectionCount, parseRouteQuery } = us
 const route = useRoute();
 const { xs } = useDisplay();
 
-const getTableHeight = () => {
-  const screenHeight = window.innerHeight;
-  const paddings = 32;
-  const actions = 52;
-  const headerHeight = document.querySelector('header')?.offsetHeight || 0;
-  return `${screenHeight - paddings - headerHeight - actions}px`;
-};
-
 const initialState =
   props.formatUrl && props.options.columns ? parseRouteQuery(route, props.options.columns, xs.value) : {};
 const { paginationInitialPage, paginationSize, initialFilter, initialHeaderFilter, initialSort } = initialState;
@@ -74,18 +66,17 @@ const { mobileConfig, mobileColumnDefinition } = useTabulatorMobile(
 xs.value && columns.unshift(mobileColumnDefinition);
 
 const rowFormatter = (row: RowComponent) => {
-  props.options.rowFormatter && props.options.rowFormatter(row);
+  props.options.rowFormatter?.(row);
   if (xs.value) return;
   onClickGoToDetails(row);
 };
 
-const { selectedRows, selectRow, deselectRow, dataProcessed } = useSelection(props.idField, tabulatorInstance.value);
+const { selectedRows, setInstance, selectRow, deselectRow, dataProcessed } = useSelection(props.idField);
 
 const tableDefinition = {
   ...tabulatorOptions,
   ...props.options,
   columns: columns,
-  ...(props.calculateHeight ? { height: getTableHeight() } : {}),
   ...(paginationInitialPage ? { paginationInitialPage } : {}),
   ...(paginationSize ? { paginationSize } : {}),
   ...(xs.value ? mobileConfig : {}),
@@ -94,11 +85,11 @@ const tableDefinition = {
   ...(initialSort?.length ? { initialSort } : {}),
   rowFormatter: rowFormatter,
 };
-console.log('tableDefinition: ', tableDefinition);
 
 onMounted(() => {
   tabulatorInstance.value = new Tabulator(table.value, tableDefinition);
   if (!props.rowActions?.selection) return;
+  setInstance(tabulatorInstance.value);
   // cant use rowSelectionChanged because tabulator emits it, with empty array, on ajax paging
   tabulatorInstance.value.on('rowSelected', selectRow);
   tabulatorInstance.value.on('rowDeselected', deselectRow);
@@ -139,36 +130,15 @@ defineExpose({
 </script>
 <template>
   <v-container fluid class="ma-0 pa-0">
-    <!-- <v-row v-if="!props.hideFilters" dense>
-      <v-col cols="12" class="d-flex align-center">
-        <FilterMenu v-if="xs" :columns="props.options.columns" :filters="appliedFilters" @submit="applyFilters" />
-        <AppliedFilters
-          v-if="props.showAppliedFilters && !xs"
-          :filters="appliedFilters"
-          :columns="props.options.columns"
-          @remove="removeFilter"
-          @remove-all="removeAllFilters"
-        />
-      </v-col>
-      <v-col v-if="props.showAppliedFilters && xs" cols="12">
-        <AppliedFilters
-          :filters="appliedFilters"
-          :columns="props.options.columns"
-          @remove="removeFilter"
-          @remove-all="removeAllFilters"
-        />
-      </v-col>
-    </v-row> -->
     <v-row no-gutters>
       <v-col cols="12">
-        <div ref="table" :key="tableKey" />
+        <div :id="props.persistenceId" ref="table" :key="tableKey" />
       </v-col>
     </v-row>
   </v-container>
 </template>
 <style scoped lang="scss">
 @import 'vuetify/lib/styles/settings/_variables';
-// @import 'tabulator-tables/dist/css/tabulator_bootstrap4.css';
 :deep(.tabulator) {
   background-color: transparent;
   .pre {
@@ -212,7 +182,6 @@ defineExpose({
       }
     }
     .tabulator-table {
-      width: 100%;
       background-color: transparent;
       .tabulator-row {
         background-color: transparent;
@@ -272,7 +241,6 @@ defineExpose({
   .tabulator-cell.tabulator-row-actions {
     height: 30px !important;
     width: calc(100% - 35px) !important;
-    // width: 0 !important;
     display: inline-flex !important;
     position: absolute !important;
     top: 0;
@@ -282,7 +250,6 @@ defineExpose({
       height: unset !important;
       // has to be same as width in actions column definition
       width: 30px !important;
-      // padding: 12px !important;
       position: relative !important;
       &.tabulator-frozen {
         position: sticky !important;
@@ -290,18 +257,12 @@ defineExpose({
     }
     .row-actions-container {
       @extend %display-row-actions;
-      //   height: unset;
       @media #{map-get($display-breakpoints, 'sm-and-up')} {
-        // position: relative !important;
         display: none !important;
       }
     }
   }
-  // .tabulator-row.tabulator-selectable:hover {
-  //   .tabulator-cell.tabulator-row-actions .row-actions-container {
-  //     @extend %display-row-actions;
-  //   }
-  // }
+
   .tabulator-row.tabulator-selectable:hover {
     .tabulator-cell.tabulator-row-actions .row-actions-container {
       @extend %display-row-actions;

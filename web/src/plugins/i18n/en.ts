@@ -22,16 +22,26 @@ export default {
     self: 'Dashboard',
     title: 'Welcome',
   },
+  administration: {
+    self: 'Administration',
+  },
   users: {
+    fields: {
+      username: 'Username',
+      name: 'Name and Surname',
+      email: 'E-mail',
+      password: 'Password',
+      createdDate: 'Created date',
+    },
     registration: {
       self: 'Register account',
-      fields: {
-        username: 'Username',
-        name: 'Name and Surname',
-        email: 'E-mail',
-        password: 'Password',
-      },
       success: 'Account registered',
+    },
+    list: {
+      self: 'Users',
+    },
+    item: {
+      self: 'User details',
     },
   },
   form: {

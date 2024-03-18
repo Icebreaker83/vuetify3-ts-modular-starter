@@ -21,7 +21,7 @@ const parseRoutes = (routes: CombinedRoute[], depth = 0): SidebarItem[] => {
       if (!route.meta?.isNavigation) return acc;
       if (!depth && !route.meta?.isRoot) return acc;
       acc.push({
-        title: (route.meta?.title ?? route.name ?? route.path) as string,
+        title: (route.meta?.title || route.name || route.path) as string,
         ...(route.name ? { href: { name: route.name } } : {}),
         icon: route.meta?.icon || '',
         ...(route.children?.length ? { child: parseRoutes(route.children as CombinedRoute[], ++depth) } : {}),

@@ -2,52 +2,93 @@ import { ref } from 'vue';
 import { useApis } from '@/services/api';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter, type RouteLocationNormalizedLoaded } from 'vue-router';
-import type { AjaxConfig, Options, Sorter, Filter, SorterFromTable, ColumnDefinition } from 'tabulator-tables';
-import type { HeaderFilterParams } from './types';
+import type { AjaxConfig, Options, Filter, SorterFromTable, ColumnDefinition } from 'tabulator-tables';
+import type { HeaderFilterParams, InitialState } from './types';
 
 const filterMapping = {
   from: 'filter[%field-From]=%value',
   to: 'filter[%field-To]=%value',
 };
 
-const parseRouteQuery = (route: RouteLocationNormalizedLoaded, columns: ColumnDefinition[], isXs: boolean) => {
-  const filterRegex = /^filter\[(.+)\]$/;
-  const rangeRegex = /^(\w+)-(From|To)$/;
-  const fromRegex = /^(\w+)-From$/;
-  const toRegex = /^(\w+)-To$/;
+const handlePagination = (
+  result: InitialState,
+  property: 'paginationInitialPage' | 'paginationSize',
+  value: string,
+) => {
+  const val = parseInt(value);
+  if (isNaN(val)) {
+    console.warn(`Invalid value for '${property}': ${value}`);
+    return;
+  }
+  result[property] = val;
+};
 
-  const result: Pick<
-    Options,
-    'paginationInitialPage' | 'paginationSize' | 'initialFilter' | 'initialHeaderFilter' | 'initialSort'
-  > = {
+const columnNameRegex = /^filter\[(.+?)(-(From|To))?\]$/;
+const filterRegex = /^filter\[(.+)\]$/;
+const rangeRegex = /^(\w+)-(From|To)$/;
+const fromRegex = /^(\w+)-From$/;
+const toRegex = /^(\w+)-To$/;
+
+type FilterType = 'initialFilter' | 'initialHeaderFilter';
+
+const handleFilter = (field: string, value: string, filterType: FilterType, result: InitialState) => {
+  filterType === 'initialFilter' &&
+    result.initialFilter?.push({
+      field: field,
+      type: '=',
+      value: value,
+    });
+  filterType === 'initialHeaderFilter' &&
+    result.initialHeaderFilter?.push({
+      field: field,
+      value: value,
+    });
+};
+
+const handleRangeFilter = (field: string, value: string, filterType: FilterType, result: InitialState) => {
+  const rangeField = field.replace(rangeRegex, '$1');
+  const filter = result[filterType]?.find(f => f.field === rangeField);
+  if (!filter) {
+    filterType === 'initialFilter' &&
+      result.initialFilter?.push({
+        field: rangeField,
+        type: '=',
+        value: { from: fromRegex.test(field) ? value : '', to: toRegex.test(field) ? value : '' },
+      });
+    filterType === 'initialHeaderFilter' &&
+      result.initialHeaderFilter?.push({
+        field: rangeField,
+        value: { from: fromRegex.test(field) ? value : '', to: toRegex.test(field) ? value : '' },
+      });
+    return;
+  }
+  const rangeValue = {
+    ...(fromRegex.test(field) ? { from: value } : {}),
+    ...(toRegex.test(field) ? { to: value } : {}),
+  };
+  Object.assign(filter.value, rangeValue);
+};
+
+const parseRouteQuery = (route: RouteLocationNormalizedLoaded, columns: ColumnDefinition[], isXs: boolean) => {
+  const result: InitialState = {
     initialFilter: [],
     initialHeaderFilter: [],
     initialSort: [],
     paginationInitialPage: 0,
     paginationSize: 0,
   };
+
   Object.entries(route.query).forEach(([key, value]) => {
-    if (key === 'page') {
-      const val = parseInt(value as string);
-      if (isNaN(val)) {
-        console.warn(`Invalid value for 'page': ${value}`);
-        return;
-      }
-      result.paginationInitialPage = val;
+    if (key === 'pageNumber') {
+      handlePagination(result, 'paginationInitialPage', value as string);
       return;
     }
-    if (key === 'perPage') {
-      const val = parseInt(value as string);
-      if (isNaN(val)) {
-        console.warn(`Invalid value for 'perPage': ${value}`);
-        return;
-      }
-      result.paginationSize = val;
+    if (key === 'pageSize') {
+      handlePagination(result, 'paginationSize', value as string);
       return;
     }
     if (key === 'sortBy') {
-      result.initialSort &&
-        result.initialSort.push({ column: value as string, dir: route.query?.sortDesc ? 'desc' : 'asc' });
+      result.initialSort?.push({ column: value as string, dir: route.query?.sortDesc ? 'desc' : 'asc' });
       return;
     }
     if (!filterRegex.test(key)) {
@@ -55,67 +96,34 @@ const parseRouteQuery = (route: RouteLocationNormalizedLoaded, columns: ColumnDe
       return;
     }
 
-    const field = key.replace(filterRegex, '$1');
-    const column = columns.find(c => c.field === field);
+    const columnName = key.replace(columnNameRegex, '$1');
+    const column = columns.find(c => c.field === columnName);
     if (!column) {
       console.warn(`No tabulator column definition found for query ${key}=${value}`);
       return;
     }
-    const filterType = column.headerFilter && !isXs ? 'initialHeaderFilter' : 'initialFilter';
+    const field = key.replace(filterRegex, '$1');
+    const filterType: FilterType = column.headerFilter && !isXs ? 'initialHeaderFilter' : 'initialFilter';
     if (!rangeRegex.test(field)) {
-      filterType === 'initialFilter' &&
-        result.initialFilter &&
-        result.initialFilter.push({
-          field: field,
-          type: '=',
-          value: value,
-        });
-      filterType === 'initialHeaderFilter' &&
-        result.initialHeaderFilter &&
-        result.initialHeaderFilter.push({
-          field: field,
-          value: value,
-        });
+      handleFilter(field, value as string, filterType, result);
       return;
     }
-    const rangeField = field.replace(rangeRegex, '$1');
-    const filter = result[filterType]?.find(f => f.field === rangeField);
-    if (!filter) {
-      filterType === 'initialFilter' &&
-        result.initialFilter &&
-        result.initialFilter.push({
-          field: rangeField,
-          type: '=',
-          value: { from: fromRegex.test(field) ? value : '', to: toRegex.test(field) ? value : '' },
-        });
-      filterType === 'initialHeaderFilter' &&
-        result.initialHeaderFilter &&
-        result.initialHeaderFilter.push({
-          field: rangeField,
-          value: { from: fromRegex.test(field) ? value : '', to: toRegex.test(field) ? value : '' },
-        });
-      return;
-    }
-    const rangeValue = {
-      ...(fromRegex.test(field) ? { from: value } : {}),
-      ...(toRegex.test(field) ? { to: value } : {}),
-    };
-    Object.assign(filter.value, rangeValue);
+    handleRangeFilter(field, value as string, filterType, result);
   });
   return result;
 };
 
 interface AjaxRequestFuncParser {
   sort: (sorts: SorterFromTable[]) => string;
-  page: (value: number) => string;
-  perPage: (value: number) => string;
+  pageNumber: (value: number) => string;
+  pageSize: (value: number) => string;
   filter: (filters: Filter[]) => string;
 }
 
 const ajaxRequestFuncParser: AjaxRequestFuncParser = {
   sort: (sorts: SorterFromTable[]): string => sorts.map(s => `sortBy=${s.field}&sortDesc=${s.dir}`).join('&'),
-  page: (value: number): string => `page=${value}`,
-  perPage: (value: number): string => `perPage=${value}`,
+  pageNumber: (value: number): string => `pageNumber=${value}`,
+  pageSize: (value: number): string => `pageSize=${value}`,
   filter: (filters: Filter[]): string => {
     const queryFilters = filters.map((filter: Filter) => {
       if (filter.value && typeof filter.value !== 'object')
@@ -127,7 +135,7 @@ const ajaxRequestFuncParser: AjaxRequestFuncParser = {
         if (value === undefined || value === null || value === '') continue;
         const filterQuery = filterMapping[key as keyof typeof filterMapping];
         if (!filterQuery) {
-          console.error(`No tabulator filter query mapping for filter ${filter}`);
+          console.error(`No tabulator filter query mapping for filter ${JSON.stringify(filter)}`);
           continue;
         }
         queries.push(
@@ -157,6 +165,7 @@ export default (formatUrl: boolean) => {
       resizable: true,
       headerHozAlign: 'center',
       vertAlign: 'middle',
+      hozAlign: 'center',
       headerFilterLiveFilter: false,
     },
     movableColumns: true,
@@ -195,7 +204,7 @@ export default (formatUrl: boolean) => {
 
       const queryString = queries.join('&');
       const getData = {
-        method: config.method || 'get',
+        method: config.method ?? 'get',
         url: `${url}${url.includes('?') ? '&' : '?'}${queryString}`,
         ...(params.data ? { data: params.data } : {}),
         ...(config.headers ? { headers: config.headers } : {}),
@@ -209,7 +218,7 @@ export default (formatUrl: boolean) => {
       return sendRequest(getData);
     },
     ajaxResponse: (url, params, response) => {
-      if (!response?.data?.payload) {
+      if (!response?.data?.rows) {
         return {
           contentType: 'application/json; charset=utf-8',
           data: [],
@@ -217,24 +226,25 @@ export default (formatUrl: boolean) => {
         };
       }
       selectionCount.value = response.data.additionalInformation?.selectionCount;
-      const totalElements = response.data.additionalInformation?.totalRows || response.data.additionalInformation || 0;
-      const addition = totalElements % params.perPage > 0 ? 1 : 0;
-      const lastPage = Math.floor(totalElements / params.perPage) + addition;
+      const totalElements = response.data?.totalRows || 0;
+      const addition = totalElements % params.pageSize > 0 ? 1 : 0;
+      const lastPage = Math.floor(totalElements / params.pageSize) + addition;
       const retObj = {
         contentType: 'application/json; charset=utf-8',
-        data: response.data.payload,
+        data: response.data.rows,
         last_page: lastPage,
         last_row: totalElements,
       };
       return retObj;
     },
     dataSendParams: {
-      page: 'page',
-      size: 'perPage',
+      page: 'pageNumber',
+      size: 'pageSize',
     },
     locale: locale,
     langs: {
       sr: i18n.messages.value.sr.tabulator,
+      en: i18n.messages.value.en.tabulator,
     },
   };
 

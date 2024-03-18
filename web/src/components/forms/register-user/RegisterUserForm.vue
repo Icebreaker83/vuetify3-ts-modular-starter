@@ -36,7 +36,7 @@ const submit = () => {
     <v-text-field
       v-model="user.username"
       variant="outlined"
-      :label="$t('users.registration.fields.username')"
+      :label="$t('users.fields.username')"
       autocomplete="username"
       autofocus
       clearable
@@ -49,7 +49,7 @@ const submit = () => {
     <v-text-field
       v-model="user.name"
       variant="outlined"
-      :label="$t('users.registration.fields.name')"
+      :label="$t('users.fields.name')"
       autocomplete="name"
       clearable
       :error-messages="errorMessages.name"
@@ -61,7 +61,7 @@ const submit = () => {
     <v-text-field
       v-model="user.email"
       variant="outlined"
-      :label="$t('users.registration.fields.email')"
+      :label="$t('users.fields.email')"
       clearable
       autocomplete="email"
       :error-messages="errorMessages.email"
@@ -74,7 +74,7 @@ const submit = () => {
       v-model="user.password"
       variant="outlined"
       :type="showPassword ? 'text' : 'password'"
-      :label="$t('users.registration.fields.password')"
+      :label="$t('users.fields.password')"
       clearable
       autocomplete="current-password"
       :error-messages="errorMessages.password"

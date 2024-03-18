@@ -28,3 +28,4 @@ export default i18n;
 
 export const t = i18n.global.t;
 export const te = i18n.global.te;
+export const tc = i18n.global.tc;

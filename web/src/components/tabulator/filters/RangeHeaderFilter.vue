@@ -29,14 +29,14 @@ const dateMasks: DateMasks = {
     mask: '##/##/####',
     format: 'MM/dd/yyyy',
     maskToValue: (masked: string) => {
-      return masked.replace(/^([\d]{2})\/([\d]{2})\/([\d]{4})$/, '$3-$1-$2');
+      return masked.replace(/^(\d{2})\/(\d{2})\/(\d{4})$/, '$3-$1-$2');
     },
   },
   sr: {
     mask: '##.##.####',
     format: 'dd.MM.yyyy',
     maskToValue: (masked: string) => {
-      return masked.replace(/^([\d]{2})\.([\d]{2})\.([\d]{4})$/, '$3-$2-$1');
+      return masked.replace(/^(\d{2})\.(\d{2})\.(\d{4})$/, '$3-$2-$1');
     },
   },
 };
@@ -48,7 +48,7 @@ const dateMask = computed(() => {
 const maskaOptions = computed(() => ({
   mask: props.type === 'date' ? dateMask.value.mask : 'D.DD#',
   tokens: {
-    D: { pattern: /[\d]/, repeated: true },
+    D: { pattern: /\d/, repeated: true },
   },
   reversed: props.type === 'amount',
 }));
@@ -59,12 +59,12 @@ const date = ref<string[]>(['', '']);
 const data: RangeData = reactive({
   from: {
     masked:
-      props.type === 'date' ? isoToFormat(props.value?.from, dateMask.value.format) || '' : props.value?.from || '',
-    unmasked: props.value?.from || '',
+      props.type === 'date' ? isoToFormat(props.value?.from, dateMask.value.format) ?? '' : props.value?.from ?? '',
+    unmasked: props.value?.from ?? '',
   },
   to: {
-    masked: props.type === 'date' ? isoToFormat(props.value?.to, dateMask.value.format) || '' : props.value?.to || '',
-    unmasked: props.value?.to || '',
+    masked: props.type === 'date' ? isoToFormat(props.value?.to, dateMask.value.format) ?? '' : props.value?.to ?? '',
+    unmasked: props.value?.to ?? '',
   },
 });
 
@@ -104,8 +104,8 @@ const clear = () => {
 };
 
 const onCalendarRangeSelected = (value: string[]) => {
-  data.from.masked = isoToFormat(value[0], dateMask.value.format) || '';
-  data.to.masked = isoToFormat(value[1], dateMask.value.format) || '';
+  data.from.masked = isoToFormat(value[0], dateMask.value.format) ?? '';
+  data.to.masked = isoToFormat(value[1], dateMask.value.format) ?? '';
 };
 </script>
 <template>

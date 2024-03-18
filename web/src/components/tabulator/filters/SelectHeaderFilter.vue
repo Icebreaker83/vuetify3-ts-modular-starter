@@ -24,7 +24,16 @@ const inputValue = ref();
 watch(
   () => props.value,
   newVal => {
-    inputValue.value = props.valueFormatter ? props.valueFormatter(newVal) : newVal;
+    if (props.valueFormatter) {
+      inputValue.value = props.valueFormatter(newVal);
+      return;
+    }
+    const selected = props.items.find(item => item.value === newVal);
+    if (selected) {
+      inputValue.value = selected.text;
+      return;
+    }
+    inputValue.value = newVal;
   },
   { deep: true, immediate: true },
 );
@@ -45,10 +54,6 @@ const onInput = () => {
 };
 const onFocus = () => {
   menuOpened.value = true;
-  // currentIndex.value = Math.max(
-  //   props.items.findIndex(item => item.value === inputValue.value.replace(/-/g, '')),
-  //   0,
-  // );
 };
 const onBlur = () => {
   menuOpened.value = false;
@@ -83,10 +88,10 @@ const clear = () => {
   selected.value = '';
 };
 const select = (index: number) => {
-  const value = filteredItems.value[index].value;
-  selected.value = value;
-  inputValue.value = props.valueFormatter ? props.valueFormatter(value) : value;
-  props.success(value);
+  const item = filteredItems.value[index];
+  selected.value = item.value;
+  inputValue.value = props.valueFormatter ? props.valueFormatter(item.value) : item.text;
+  props.success(item.value);
   menuOpened.value = false;
 };
 </script>

@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import HeaderFilterButton from '../components/HeaderFilterButton.vue';
 import type { HeaderFilterProps } from '../types';
-import { watch } from 'vue';
 import { vMaska } from 'maska';
 
-const props = withDefaults(
-  defineProps<HeaderFilterProps>(),
-  {
-    success: () => true,
-    cancel: () => {},
-  },
-);
+const props = withDefaults(defineProps<HeaderFilterProps>(), {
+  success: () => true,
+  cancel: () => {},
+});
 
 const vMask = props.maska ? vMaska : {};
 

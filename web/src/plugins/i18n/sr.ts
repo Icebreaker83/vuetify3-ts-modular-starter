@@ -21,16 +21,26 @@ export default {
     self: 'Почетна',
     title: 'Добродошли',
   },
+  administration: {
+    self: 'Администрација',
+  },
   users: {
+    fields: {
+      username: 'Кориснички налог',
+      name: 'Име и Презиме',
+      email: 'Е-пошта',
+      password: 'Лозинка',
+      createdDate: 'Датум креирања',
+    },
     registration: {
       self: 'Регистрација налога',
-      fields: {
-        username: 'Кориснички налог',
-        name: 'Име и Презиме',
-        email: 'Е-пошта',
-        password: 'Лозинка',
-      },
       success: 'Налог регистрован',
+    },
+    list: {
+      self: 'Корисници',
+    },
+    item: {
+      self: 'Детаљи корисника',
     },
   },
   form: {

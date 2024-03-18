@@ -7,7 +7,7 @@ declare module 'tabulator-tables' {
     items?: { value: string | number | boolean; text: string }[];
   }
   export type CustomEditorParams = CustomHeaderFilterParams | Tabulator.EditorParams;
-  export type CustomFormatter = 'appDate' | 'appDateTime' | Tabulator.Formatter;
+  export type CustomFormatter = 'appDate' | 'appDateTime' | 'pills' | Tabulator.Formatter;
 
   export interface CustomColumnDefinition
     extends Omit<Tabulator.ColumnDefinition, 'headerFilter' | 'formatter' | 'headerFilterParams'> {

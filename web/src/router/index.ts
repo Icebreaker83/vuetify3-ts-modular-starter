@@ -20,6 +20,9 @@ const routes = [
     name: 'privateRoutes',
     component: PrivateLayout,
     children: privateRoutes,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/forbidden',

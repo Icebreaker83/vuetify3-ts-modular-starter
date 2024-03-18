@@ -59,8 +59,8 @@ export interface SelectHeaderFilterItem {
 export interface HeaderFilterParams {
   filter: Filter[];
   sort: SorterFromTable[];
-  page: number;
-  perPage: number;
+  pageNumber: number;
+  pageSize: number;
   data: unknown;
 }
 export interface HeaderFilterProps {
@@ -69,3 +69,17 @@ export interface HeaderFilterProps {
   cancel: ValueVoidCallback;
   maska?: string;
 }
+
+export interface IPillFormatter {
+  text: string;
+  color?: string;
+}
+
+export interface IPillFormatterParams {
+  [key: string]: IPillFormatter;
+}
+
+export type InitialState = Pick<
+  Options,
+  'paginationInitialPage' | 'paginationSize' | 'initialFilter' | 'initialHeaderFilter' | 'initialSort'
+>;

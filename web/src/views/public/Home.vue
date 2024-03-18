@@ -17,7 +17,7 @@ const onSubmit = (user: LoginPayload) => {
 <template>
   <v-container fluid class="pa-0 fill-height">
     <v-row no-gutters class="justify-center align-center fill-height">
-      <v-col cols="12" sm="6" class="d-flex align-center justify-center px-2">
+      <v-col cols="12" sm="6" class="d-flex align-center justify-center">
         <div class="form-wrapper">
           <div class="heading">
             <img class="logo" src="@/assets/logo.svg" alt="Home Logo" height="80" />

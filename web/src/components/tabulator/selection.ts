@@ -2,9 +2,12 @@ import { ref } from 'vue';
 import type { RowComponent, Tabulator } from 'tabulator-tables';
 import type { RowData } from './types';
 
-export default (idField = 'id', tabulatorInstance: Tabulator) => {
+export default (idField = 'id') => {
   const selectedRows = ref<RowData[]>([]);
-
+  let tabulatorInstance: Tabulator;
+  const setInstance = (instance: Tabulator) => {
+    tabulatorInstance = instance;
+  };
   const selectRow = (row: RowComponent) => {
     const data = row.getData();
     const rowId = data[idField];
@@ -41,5 +44,5 @@ export default (idField = 'id', tabulatorInstance: Tabulator) => {
     });
   };
 
-  return { selectedRows, selectRow, deselectRow, dataProcessed };
+  return { setInstance, selectedRows, selectRow, deselectRow, dataProcessed };
 };
