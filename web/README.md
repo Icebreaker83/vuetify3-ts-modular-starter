@@ -1,5 +1,3 @@
-# BPS Web
-
 This folder contains Web service implementation using:
 * [Vue.js 3](https://vuejs.org/guide/introduction.html) with Composition API
 * [Vite](https://vitejs.dev/guide/)
@@ -17,7 +15,7 @@ npm install
 
 ```
 # npm
-npm run dev
+npm start
 ```
 
 ### Compiles and minifies for production
@@ -30,17 +28,3 @@ npm run build
 ### Customize configuration
 
 See [Configuration Reference](https://vitejs.dev/config/).
-
-
-## Important documents
-
-|             Document             |                   Description                    |
-| -------------------------------- | ------------------------------------------------ |
-| [Project standards]              | KnowIT frontend project standards                |
-| [Coding standards]               | KnowIT frontend coding standards                 |
-| [Style guide]                    | KnowIT frontend style guide                      |
-
-
-[Project standards]:                ./docs/project-checklist.md
-[Coding standards]:                 ./docs/service.md
-[Style guide]:                      ./docs/css-style-guide.md
