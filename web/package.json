@@ -1,5 +1,5 @@
 {
-  "name": "bps",
+  "name": "vuetify3-ts-modular",
   "version": "0.0.0",
   "scripts": {
     "start": "vite --host=0.0.0.0",
